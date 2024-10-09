@@ -1,0 +1,35 @@
+# FROM ultralytics/ultralytics
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    tesseract-ocr
+
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+RUN pip install transformers
+RUN pip install torchvision
+RUN pip install protobuf
+RUN pip install sentencepiece
+RUN pip install paddlepaddle paddleocr
+RUN pip install easyocr==1.7.1
+# RUN apt-get update
+# RUN apt-get install -y tesseract-ocr
+# RUN pip install flask
+# RUN pip install numpy==1.23.5
+# RUN pip install pytesseract
+# RUN pip install megfile
+# RUN pip install tiktoken
+# RUN pip install verovio
+# RUN pip install accelerate
+
+
+COPY . .
+
+EXPOSE 5052
+
+CMD ["python", "passport_app.py"]

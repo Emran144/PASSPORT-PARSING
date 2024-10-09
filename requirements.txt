@@ -1,0 +1,4 @@
+PassportEye
+flask
+pytesseract
+easyocr

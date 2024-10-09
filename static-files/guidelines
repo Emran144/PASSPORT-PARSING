@@ -1,0 +1,60 @@
+# Only EasyOCR requirements:
+    PassportEye==2.2.1
+    Flask==3.0.3
+    pytesseract==0.3.13
+    easyocr==1.7.2
+
+# GOT-OCR requirements:
+    transformers==4.45.1
+    tiktoken==0.7.0
+    verovio==4.3.1
+    accelerate==0.34.2   # Condition 'accelerate>=0.26.0'
+    numpy==1.23.5
+
+# Might Not necessary
+    torchvision==0.19.1
+    megfile
+
+# For GOT-OCR CPU:
+    Models Dir: 'models/gotocr-cpu'
+    model.to('cpu') 
+    torch_dtype=torch.float32,  # float16 for GPU | float32 for CPU
+    Remove Line: device_map='auto',      # for CPU remove this line
+    Remove docker-compose GPU Dependencies
+
+# Docker Images History
+    Image: passport-parsing:1.1
+        Explanation: So far, using EasyOCR it's a running complete project. Issue is OCR only
+    Image: passport-parsing:1.2
+        Explanation: Over 1.1, donutVQA and fine-tuned donut extractor added for testing purpose
+
+# Already Tried
+    - Docker Fine Tuned Extractor doesn't work properly
+
+# Prompt for generation synthetic MRZ
+    """
+    I want to generate synthetic MRZ for 500 passport. I just want to generate the MRZ region synthetically. 
+    1. Take a blank image. Width of the image will be between 300-700 randomly. Height will be width/7. 
+    2. Document type is always P
+    3. Country code will be chosen randomly from a json file located "static-files/country-codes/countries.json". Code for it:
+    countries = load the json
+    codes = []
+    for country in countries:
+        codes.append(country['alpha_3_code]
+
+    In the codes list, all country code will be available. Now, choose randomly from here
+    4. Name of the passport holder can be found at "input_files/payee_name.xlsx" file and sheet name is "payee_name" and column name is also "payee_name". Take a name randomly. Then convert them according to the passport mrz format.
+    5. Generate a random passport number for each mrz.
+    6. Generate a random DOB in between 01/01/1950 to 01/01/2015 and convert it like as passport mrz.
+    7. Randomly choose M(60% times) & F(40% times) for male and female. 
+    8. Generate a random expiration date in between today to next 10 years.
+    9. Generate a personal number either 10 numeric characters (75% time) or 14 numeric characters for 25% time. This personal number position will be at the 2nd line after the expiration date.
+    10. And finally choose a number between 00 to 99 randomly for the last two character of the 2nd line.
+    11. Please convert two line of mrz using above chosen data.
+    12. choose the font for written on the image from the location of 'static-files/mrz_fonts/OCRB_Regular.ttf'
+    13. Font size will depend on the mrz region's image size. Please Keep 20 px of empty padding in all four sides. Then decide the font size for the text on the image according the image size after keeping empty padding.
+    14. Now write and save the mrz image in the directory "outputs/mrz-synthetic-data/" directory with the name 1 to 500.
+    15. Then write the line 1 and line 2 in a csv file named "output/mrz-synthetic-data/mrz-syn-annotation.csv" with the column heading img_name, line-1, line-2.
+
+    Do this all for 500 images using python
+    """

@@ -1,0 +1,6 @@
+.env
+inputs
+models/*
+!models/.gitkeep
+resources/__pycache__
+synthetic-mrz
